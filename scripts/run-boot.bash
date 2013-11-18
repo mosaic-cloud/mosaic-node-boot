@@ -87,11 +87,16 @@ if test ! -e "${mosaic_node_temporary}" ; then
 	mkdir -p -- "${mosaic_node_temporary}"
 fi
 
+if test ! -e "${mosaic_node_temporary}/home" ; then
+	mkdir -p -- "${mosaic_node_temporary}/home"
+fi
+
 if test ! -e "${mosaic_node_temporary}/.iptables" ; then
 	touch "${mosaic_node_temporary}/.iptables"
 	iptables -t nat -A PREROUTING -p tcp --dport 80 -m state --state NEW -j DNAT --to :31000 2>/dev/null || true
 fi
 
+export HOME="${mosaic_node_temporary}/home"
 export PATH="${mosaic_node_path}"
 
 if test "${#}" -eq 0 ; then
