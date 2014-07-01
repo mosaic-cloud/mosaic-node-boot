@@ -6,15 +6,18 @@ export -n BASH_ENV
 
 _workbench="$( readlink -e -- . )"
 _scripts="${_workbench}/scripts"
-_tools="${pallur_tools:-${_workbench}/.tools}"
 _outputs="${_workbench}/.outputs"
-_temporary="${pallur_temporary:-/tmp}"
+_tools="${pallur_tools:-${_workbench}/.tools}"
+_temporary="${pallur_temporary:-${pallur_TMPDIR:-${TMPDIR:-/tmp}}}"
 
-_PATH="${_tools}/bin:${PATH}"
+_PATH="${pallur_PATH:-${_tools}/bin:${PATH}}"
+_HOME="${pallur_HOME:-${HOME}}"
+_TMPDIR="${pallur_TMPDIR:-${TMPDIR:-${_temporary}}}"
 
 _generic_env=(
 		PATH="${_PATH}"
-		TMPDIR="${_temporary}"
+		HOME="${_HOME}"
+		TMPDIR="${_TMPDIR}"
 )
 
 _package_name="$( basename -- "$( readlink -e -- . )" )"
