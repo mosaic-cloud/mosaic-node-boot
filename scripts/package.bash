@@ -9,9 +9,9 @@ if test -e "${_outputs}/package" ; then
 	chmod -R +w -- "${_outputs}/package"
 	rm -R -- "${_outputs}/package"
 fi
-if test -e "${_outputs}/package.tar.gz" ; then
-	chmod +w -- "${_outputs}/package.tar.gz"
-	rm -- "${_outputs}/package.tar.gz"
+if test -e "${_outputs}/package.cpio.gz" ; then
+	chmod +w -- "${_outputs}/package.cpio.gz"
+	rm -- "${_outputs}/package.cpio.gz"
 fi
 
 mkdir -- "${_outputs}/package"
@@ -69,37 +69,14 @@ done
 
 ln -s -T -- "./${_package_name}--run-boot" "${_outputs}/package/bin/run"
 
-cat >"${_outputs}/package/pkg.json" <<EOS
-{
-	"package" : "${_package_name}",
-	"version" : "${_package_version}",
-	"maintainer" : "developers@mosaic-cloud.eu",
-	"description" : "${_package_name}",
-	"directories" : [ "bin", "lib" ],
-	"depends" : [
-		"mosaic-utils-0.0.2",
-		"mosaic-node-${_package_version}",
-		"mosaic-node-wui-${_package_version}",
-		"mosaic-components-rabbitmq-${_package_version}",
-		"mosaic-components-riak-kv-${_package_version}",
-		"mosaic-components-couchdb-${_package_version}",
-		"mosaic-components-httpg-${_package_version}",
-		"mosaic-components-mysql-${_package_version}",
-		"mosaic-components-me2cp-${_package_version}",
-		"mosaic-components-java-component-container-${_package_version}",
-		"mosaic-components-java-cloudlet-container-${_package_version}",
-		"mosaic-components-java-driver-amqp-${_package_version}",
-		"mosaic-components-java-driver-riak-${_package_version}",
-		"mosaic-applications-realtime-feeds-backend-${_package_version}",
-		"mosaic-applications-realtime-feeds-frontend-java-${_package_version}",
-		"mosaic-applications-realtime-feeds-indexer-java-${_package_version}",
-		"iptables"
-	]
-}
-EOS
-
 chmod -R a+rX-w -- "${_outputs}/package"
 
-tar -czf "${_outputs}/package.tar.gz" -C "${_outputs}/package" .
+cd "${_outputs}/package"
+find . \
+		-xdev -depth \
+		\( -type d -o -type l -o -type f \) \
+		-print0 \
+| cpio -o -H newc -0 --quiet \
+| gzip --fast >"${_outputs}/package.cpio.gz"
 
 exit 0
