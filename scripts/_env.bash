@@ -23,3 +23,4 @@ _generic_env=(
 _package_name="$( basename -- "$( readlink -e -- . )" )"
 _package_version="${pallur_distribution_version:-0.7.0_dev}"
 _package_scripts=( run-boot )
+_artifacts_cache="${pallur_artifacts:-}"
