@@ -58,15 +58,7 @@ fi
 if test -n "${mosaic_node_path:-}" ; then
 	true
 else
-	echo "[ww] missing node PATH; trying to auto-detect..." >&2
-	mosaic_node_path="$(
-			(
-				find /opt -maxdepth 1 -exec test -d {} -a -d {}/bin \; -print \
-				| sed -r -e 's|^.*$|&/bin|'
-				tr ':' '\n' <<<"${_PATH}"
-			) \
-			| tr '\n' ':'
-	)"
+	mosaic_node_path="${_PATH}"
 fi
 
 echo "[ii] using the application FQDN \`${mosaic_application_fqdn}\`;" >&2
@@ -75,13 +67,6 @@ echo "[ii] using the node IP \`${mosaic_node_ip}\`;" >&2
 echo "[ii] using the node log \`${mosaic_node_log}\`;" >&2
 echo "[ii] using the node temporary \`${mosaic_node_temporary}\`;" >&2
 echo "[ii] using the node PATH \`${mosaic_node_path}\`;" >&2
-
-export mosaic_application_fqdn
-export mosaic_node_fqdn
-export mosaic_node_ip
-export mosaic_node_log
-export mosaic_node_temporary
-export mosaic_node_path
 
 if test ! -e "${mosaic_node_temporary}" ; then
 	mkdir -p -- "${mosaic_node_temporary}"
@@ -96,13 +81,21 @@ if test ! -e "${mosaic_node_temporary}/.iptables" ; then
 	iptables -t nat -A PREROUTING -p tcp --dport 80 -m state --state NEW -j DNAT --to :31000 2>/dev/null || true
 fi
 
-export HOME="${mosaic_node_temporary}/home"
-export PATH="${mosaic_node_path}"
+_exec_env=(
+		mosaic_application_fqdn="${mosaic_application_fqdn}"
+		mosaic_node_fqdn="${mosaic_node_fqdn}"
+		mosaic_node_ip="${mosaic_node_ip}"
+		mosaic_node_log="${mosaic_node_log}"
+		mosaic_node_temporary="${mosaic_node_temporary}"
+		mosaic_node_path="${mosaic_node_path}"
+		HOME="${mosaic_node_temporary}/home"
+		PATH="${mosaic_node_path}"
+)
 
 if test "${#}" -eq 0 ; then
-	exec mosaic-node--run-node
+	exec env -i "${_exec_env[@]}" mosaic-node--run-node
 else
-	exec mosaic-node--run-node "${@}"
+	exec env -i "${_exec_env[@]}" mosaic-node--run-node "${@}"
 fi
 
 exit 1
