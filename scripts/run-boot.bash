@@ -37,6 +37,13 @@ else
 	mosaic_node_ip="$( hostname -i 2>/dev/null | tr ' ' '\n' | head -n 1 || true )"
 fi
 
+if test -n "${mosaic_node_definitions:-}" ; then
+	true
+else
+	echo "[ww] missing node definitions; falling to defaults..." >&2
+	mosaic_node_definitions=''
+fi
+
 if test -n "${mosaic_node_temporary:-}" ; then
 	true
 elif test -n "${mos_fs_tmp:-}" ; then
@@ -65,6 +72,7 @@ echo "[ii] using the application FQDN \`${mosaic_application_fqdn}\`;" >&2
 echo "[ii] using the node FQDN \`${mosaic_node_fqdn}\`;" >&2
 echo "[ii] using the node IP \`${mosaic_node_ip}\`;" >&2
 echo "[ii] using the node log \`${mosaic_node_log}\`;" >&2
+echo "[ii] using the node definitions \`${mosaic_node_definitions}\`;" >&2
 echo "[ii] using the node temporary \`${mosaic_node_temporary}\`;" >&2
 echo "[ii] using the node PATH \`${mosaic_node_path}\`;" >&2
 
@@ -86,6 +94,7 @@ _exec_env=(
 		mosaic_node_fqdn="${mosaic_node_fqdn}"
 		mosaic_node_ip="${mosaic_node_ip}"
 		mosaic_node_log="${mosaic_node_log}"
+		mosaic_node_definitions="${mosaic_node_definitions}"
 		mosaic_node_temporary="${mosaic_node_temporary}"
 		mosaic_node_path="${mosaic_node_path}"
 		HOME="${mosaic_node_temporary}/home"
