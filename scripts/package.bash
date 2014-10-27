@@ -122,8 +122,6 @@ EOS--5690bb4114b0428099a9b63f75de8406
 ## chunk::cd272b06265b6e7f94a1bfe0bb8c206f::end ##
 done
 
-ln -s -T -- "./${_package_name}--run-boot" "${_outputs}/package/bin/run"
-
 ## chunk::3b87aa53ffaed5f9c0426a6bbed5704a::begin ##
 chmod -R a+rX-w,u+w -- "${_outputs}/package"
 
